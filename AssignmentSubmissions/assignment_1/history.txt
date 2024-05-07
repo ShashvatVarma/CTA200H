@@ -1,0 +1,129 @@
+    1  exit
+    2  cd /home/svarma
+    3  cd
+    4  ls
+    5  cd Desktop
+    6  ls
+    7  cd /Desktop
+    8  cd cosmo4/Desktop
+    9  cd Desktop
+   10  ls
+   11  cd
+   12  ls
+   13  cd /Documents
+   14  cd
+   15  ls
+   16  cd /fs/lustre/scratch/svarma
+   17  ls
+   18  pwd
+   19  mkdir CTA200_2024
+   20  ls
+   21  pwd
+   22  ls
+   23  cd CTA200_2024/
+   24  ls
+   25  pwd
+   26  mkdir assignment_1
+   27  ls
+   28  cd assignment_1/
+   29  ls
+   30  touch README.md
+   31  ls
+   32  open README.md 
+   33  vim README.md 
+   34  vim README.md
+   35  ls
+   36  cd
+   37  ls
+   38  cd \fs\lustre\scratch\svarma
+   39  cd /fs/lustre/scratch/svarma
+   40  ls
+   41  cd CTA200_2024/
+   42  ls
+   43  cd assignment_1/
+   44  ls
+   45  find
+   46  cd
+   47  ls
+   48  cd /home/murry
+   49  cd /home/murray
+   50  ls
+   51  cp /home/murray/Hello_world.c /fs/lustre/scratch/svarma/CTA200_2024/assignment_1/
+   52  ls
+   53  cd
+   54  ls
+   55  /fs/lustre/scratch/svarma/CTA200_2024/assignment_1/
+   56  ls
+   57  cd /fs/lustre/scratch/svarma/CTA200_2024/assignment_1/
+   58  ls
+   59  code Hello_world.c 
+   60  cp /home/murray/Hello_world.py /fs/lustre/scratch/svarma/CTA200_2024/assignment_1/
+   61  ls
+   62  code Hello_world.py
+   63  ls
+   64  cd /fs/lustre/scratch/svarma/CTA200_2024/assignment_1/
+   65  ls
+   66  code
+   67  cd /fs/lustre/scratch/svarma/CTA200_2024/assignment_1/
+   68  ls
+   69  mv Hello_world.c Hello_world_varma.c
+   70  mv Hello.world.py Hello_world_varma.py
+   71  mv Hello_world.py Hello_world_varma.py
+   72  ls
+   73  code Hello-world_varma.py
+   74  exit
+   75  cd /fs/lustre/scratch/svarma/CTA200_2024/assignment_1/
+   76  ls
+   77  code Hello_world_varma.py
+   78  run Hello_world_varma.py
+   79  ls
+   80  code Hello_world_varma.py
+   81  ls
+   82  gcc Hello_world_varma.c -o Hello_world.x
+   83  ls
+   84  Hello_world.x
+   85  ./Hello_world.x 
+   86  gcc Hello_world.py
+   87  gcc Hello_world.py Hello_world.x
+   88  ls
+   89  gcc Hello_world_varma.py Hello_world.x
+   90  module python/3.10.2
+   91  python Hello_world_varma.py Hello_world.x
+   92  ./Hello_world_varma.py
+   93  module list
+   94  module load gcc/11.2.0
+   95  module list
+   96  module load python/3.10.2
+   97  module list
+   98  python Hello_world_varma.py Hello_world_python.x
+   99  ./Hello_world_python.x
+  100  ls
+  101  vim Hello_world_varma.c
+  102  vim Hello_world_varma.py
+  103  Hello_world_varma.py
+  104  python Hello_world_varma.py 
+  105  gcc Hello_world_varma.c
+  106  gcc Hello_world_varma.c Hello_world.x
+  107  gcc Hello_world_varma.c Hello_world_new.x
+  108  vim Hello_world_varma.c
+  109  gcc Hello_world_varma.c Hello_world.x
+  110  gcc Hello_world_varma.c-o  Hello_world.x
+  111  ./Hello_world.x
+  112  gcc Hello_world_varma.c -o Hello_world.x
+  113  ./Hello_world.x
+  114  vim Hello_world_varma.c
+  115  gcc Hello_world_varma.c -o Hello_world.x
+  116  ./Hello_world.x
+  117  ls
+  118  mkdir output_c.txt
+  119  ls
+  120  rmdir output_c.txt
+  121  ls
+  122  ./Hello_world.x >output_c.txt
+  123  ls
+  124  cat output_c.txt
+  125  python Hello_world_varma.py > output_python.txt
+  126  ls
+  127  cat output_python.txt
+  128  history
+  129  history > history.txt
