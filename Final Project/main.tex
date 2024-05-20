@@ -1,0 +1,137 @@
+\documentclass{article}
+\usepackage[utf8]{inputenc}
+\usepackage{graphicx}
+\usepackage{amsmath}
+\usepackage{caption}
+\usepackage{subcaption}
+\usepackage{float}
+\usepackage{hyperref}
+\usepackage{xparse}
+\usepackage{natbib}
+\usepackage{minted}
+\usepackage{xcolor}
+\setlength\parindent{24pt}
+\definecolor{LightGray}{gray}{0.9}
+
+\usepackage[left=2.54cm,right=2.54cm,top=2cm,bottom=2cm]{geometry}
+
+\title{CTA200 Project}
+\author{Shashvat Varma}
+\date{May 2024}
+
+\begin{document}
+
+\maketitle
+
+\section*{Question 1}
+In this section, we create a more efficient algorithm to compute eigenvalues and eigenvectors of Hermitian matrices. To do so, we encorporate both parallelization across multiple cores on the computing system, as well as vectorize the calculation to speed it up. The algorithm was then used to find the eigenvalues of the symmetric component of the velocity gradient tensor in a magnetohydrodynamic simulation. The code generates an animation of how the eigenvalues evolve in time. An example frame from the animation is shown in Figure \ref{fig:eig_distr}. The function developed can be used on any individual matrix.
+\begin{figure}[H]
+    \centering
+    \includegraphics[scale=0.75]{image72.png}
+    \caption{Histogram of the eigenvalue spectrum, found by computing the eigenvalues of the symmetric component of the velocity gradient tensor at each of the $128^3$ points in the simulation. This particular image is the distribution at time $0.72 t_0$. }
+    \label{fig:eig_distr}
+\end{figure}
+
+\section*{Question 2}
+In this section, we make use of the closed-form solutions to the eigenvalue problem outlined by Deledalle et al. 2017. Consider a Hermitian matrix of the form:
+\begin{equation}
+    A = 
+    \begin{pmatrix}
+        a & d^* & f^* \\
+        d & b& e^* \\
+        f & e & c
+    \end{pmatrix}
+\end{equation}
+The eigenvalues $\lambda_i$ of the matrix A is given by:
+\begin{align}
+    \lambda_1 &= \left[ a+b+c-2\sqrt{x_1} \cos(\phi/3)\right]/3 \\
+    \lambda_2 &= \left[ a+b+c+2\sqrt{x_1} \cos[(\phi-\pi)/3]\right]/3 \\
+    \lambda_3 &= \left[ a+b+c+2\sqrt{x_1} \cos[(\phi+\pi)/3]\right]/3
+\end{align}
+where we define
+
+\begin{align}
+    x_1 &= a^2 + b^2 + c^2 -ab-ac-bc+3(|d|^2 + |f|^2 + |e|^2) \\
+    x_2 &= -(2a-b-c)(2b-a-c)(2c-a-b) + 9\left[(2c-a-b)|d|^2 + (2b-a-c)|f|^2 + (2a-b-c)|e^2| \right] - 54 \text{Re}(d^* e^* f) \\
+    \phi &= 
+    \begin{cases}
+        \arctan \left( \frac{\sqrt{4x_1^3 - x_2^2}}{x_2}\right), & x_2>0 \\
+        \pi/2, & x_2=0 \\
+        \arctan \left( \frac{\sqrt{4x_1^3 - x_2^2}}{x_2}\right) + \pi, & x_2<0
+    \end{cases}
+\end{align}
+With these eigenvalues, we can define the eigenvectors $v_i$ as:
+\begin{align}
+    v_1 &=
+    \begin{pmatrix}
+        (\lambda_1 -c-em_1)/f \\
+        m_1\\
+        1
+    \end{pmatrix} \\
+    v_2 &= 
+    \begin{pmatrix}
+        (\lambda_2 -c-em_2)/f \\
+        m_2\\
+        1
+    \end{pmatrix} \\
+    v_3 &= 
+    \begin{pmatrix}
+        (\lambda_3 -c-em_3)/f \\
+        m_3\\
+        1
+    \end{pmatrix}
+\end{align}
+where 
+\begin{align}
+    m_1 &= \frac{d(c-\lambda_1) - e^*f}{f(b-\lambda_1) -de} \\
+    m_2 &= \frac{d(c-\lambda_2) - e^*f}{f(b-\lambda_2) -de} \\
+    m_1 &= \frac{d(c-\lambda_3) - e^*f}{f(b-\lambda_3) -de}
+\end{align}
+This method for computing eigenvalues was implemented in Python to compute eigenvalues of the symmetric component of the velocity gradient tensor in a magnetohydrodynamic simulation. The code generates an animation of how the eigenvalues evolve in time. 
+
+Traditional eigenvalue solvers like ones found in the numpy and scipy libraries use root solvers to find the roots of the characteristic polynomial of the matrix. This process is significantly slower than direct computations. In the code file, I time the computation of $128^3$ eigenvalues. The results are summarized in Table \ref{tab:timings}.
+\begin{table}[H]
+    \centering
+    \begin{tabular}{|c|c|}
+    \hline
+        Method & Computation Time (s) \\
+        \hline
+        \hline
+         numpy.linalg.eigh&24 \\
+         scipy.linalg.eig &70 \\
+         Deledalle et al. 2017 & 1.5\\
+         \hline
+    \end{tabular}
+    \caption{Time taken to compute eigenvalues of $128^3$ symmetric matrices using different numerical methods. Direct computaiton is clearly faster than traditional methods through solving the characteristic polynomial.}
+    \label{tab:timings}
+\end{table}
+Another reason for this significant time difference is in how the three routines were implemented. The structure of the arrays were of shape (3,3,128,128,128), and vectorized calculations from the first two methods would require an array of (128,128,128,3,3). There is no simple reshape function that converts between the two without scrambling the values in each matrix. To construct this array, we would have to do element-wise redefinition anyway. So, the numpy and scipy calculations were done by looping through each individual matrix. The beauty of the third method is that direct computations can be done with any numpy array shape, effectively vectorizing the problem and speeding up the calculation. Both methods yield identical results up to numerical precision, as shown in Figures \ref{fig:numpydiff} and \ref{fig:scipydiff}. 
+\begin{figure}[H]
+    \centering
+    \includegraphics[scale=0.7]{numpy_diff.png}
+    \caption{The distribution of difference in eigenvalues computed by numpy and computed by the new numerical method at a single time realization.}
+    \label{fig:numpydiff}
+\end{figure}
+\begin{figure}[H]
+    \centering
+    \includegraphics[scale=0.7]{scipy_diff.png}
+    \caption{The distribution of difference in eigenvalues computed by scipy and computed by the new numerical method at a single time realization.}
+    \label{fig:scipydiff}
+\end{figure}
+\section*{Question 3}
+In this section, we additionally compute the angle between the magnetic field and the eigenvector at each point in the simulation. This is done through computing the dot product. The results for the two different phases of the dynamo are shown in Figures \ref{fig:diff-free} and \ref{fig:kinematic}.
+
+\begin{figure}[H]
+    \centering
+    \includegraphics[scale=0.7]{image87.png}
+    \caption{The angle between the magnetic field and the stretching eigenvector associated with eigenvalue $\lambda_s$ during the diffusion-free phase.}
+    \label{fig:diff-free}
+\end{figure}
+\begin{figure}[H]
+    \centering
+    \includegraphics[scale=0.7]{image223.png}
+    \caption{The angle between the magnetic field and the stretching eigenvector associated with eigenvalue $\lambda_s$ during the kinematic phase.}
+    \label{fig:kinematic}
+\end{figure}
+It is evident that during the diffusion-free phase, the stretching eigenvector prefers to align parallel/antiparallel with the magnetic field, while it prefers to be mostly perpendicular during the kinematic phase. 
+\end{document}
