@@ -432,7 +432,9 @@ if __name__ == '__main__':
         #ways of computing eigenvalues, including scripts from numpy and scipy
         #use one data file as a testcase
         if i_am_the_grader == True:
-            #vel_gradient = np.loadtxt
+            file = h5py.File(directory + 'velocity_gradient.h5', 'r')
+            vel_gradient = file['File1'][:]   #load in the velocity gradient field
+            file.close()
             pass
         else:
             data = funcs.DataLoader(directory, 123)
